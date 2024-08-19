@@ -1,3 +1,0 @@
-framestack: 0 # 10 #10 #8 # todo
-mat_framestack_instead: False
-alg: ppo

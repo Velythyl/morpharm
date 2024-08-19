@@ -1,10 +1,9 @@
-import gym.spaces
+import gymnasium
 import numpy as np
 import torch
-from gym import Wrapper
 
 
-class MultiPlexEnv(Wrapper):
+class MultiPlexEnv(gymnasium.Wrapper):
     def __init__(self, env_list, device, unify_key_endswiths=[]):
         super().__init__(env_list[0])
         self.env_list = env_list
@@ -12,11 +11,11 @@ class MultiPlexEnv(Wrapper):
         self.device = device
         self.num_envs_per_env = env_list[0].observation_space.shape[0]
 
-        self.obs_space_shape = (self.num_envs_per_env * len(env_list), *self.observation_space.shape[1:])
+        self.obs_space_shape = (self.num_envs_per_env * len(env_list), *env_list[0].observation_space.shape[1:])
         #self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=obs_space_shape)
         #np.ones(obs_space_shape) * -np.inf, high=np.ones(obs_space_shape) * np.inf)
         act_space_shape = (self.num_envs_per_env * len(env_list), *self.action_space.shape[1:])
-        self.action_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=act_space_shape)
+        self.action_space = gymnasium.spaces.Box(low=-np.inf, high=np.inf, shape=act_space_shape)
         #np.ones(act_space_shape) * -np.inf, high=np.ones(act_space_shape) * np.inf)
 
         self.num_envs = self.num_envs_per_env * self.env_list_len
@@ -29,7 +28,15 @@ class MultiPlexEnv(Wrapper):
 
     @property
     def observation_space(self):
-        return gym.spaces.Box(low=-np.inf, high=np.inf, shape=self.obs_space_shape)
+        return gymnasium.spaces.Box(low=-np.inf, high=np.inf, shape=self.obs_space_shape)
+
+    @property
+    def single_observation_space(self):
+        return gymnasium.spaces.Box(low=-np.inf, high=np.inf, shape=self.observation_space.shape[1:])
+
+    @property
+    def single_action_space(self):
+        return gymnasium.spaces.Box(low=-np.inf, high=np.inf, shape=(self.action_space.shape[1],))
 
     def close(self):
         for env in self.env_list:
@@ -51,7 +58,8 @@ class MultiPlexEnv(Wrapper):
         with torch.no_grad():
             obs_s = []
             rew_s = []
-            done_s = []
+            term_s = []
+            trunc_s = []
             info_s = {}
 
             start = 0
@@ -60,15 +68,17 @@ class MultiPlexEnv(Wrapper):
                 acts.requires_grad = False
                 start = stop
 
-                obs, rew, done, info = self.env_list[i].step(acts)
+                obs, rew, term, trunc, info = self.env_list[i].step(acts)
                 obs_s.append(obs)
                 rew_s.append(rew)
-                done_s.append(done)
+                term_s.append(term)
+                trunc_s.append(trunc)
                 info_s.update(info)
 
             obs_s = torch.concat(obs_s)
             rew_s = torch.concat(rew_s)
-            done_s = torch.concat(done_s)
+            term_s = torch.concat(term_s)
+            trunc_s = torch.concat(trunc_s)
 
             unified_keys = {k: [] for k in self.unify_key_endswiths}
             for k, v in info_s.items():
@@ -83,4 +93,4 @@ class MultiPlexEnv(Wrapper):
                 final_unified_keys[k] = torch.concat(v)
             info_s.update(final_unified_keys)
 
-        return obs_s, rew_s, done_s, info_s
+        return obs_s, rew_s, term_s, trunc_s, info_s

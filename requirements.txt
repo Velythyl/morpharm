@@ -1,0 +1,17 @@
+scipy
+torch
+torchvision
+tensorboard
+transforms3d
+opencv-python
+moviepy
+matplotlib
+pynvml
+wandb==0.16.2
+hydra-core
+seaborn
+plotly
+gymnasium
+mujoco
+tyro
+numpy<2

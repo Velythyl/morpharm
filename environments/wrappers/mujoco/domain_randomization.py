@@ -1,6 +1,5 @@
 import gymnasium
 import numpy as np
-from gym import Wrapper
 
 def make_sampler(base, percent_below, percent_above):
     base_low = base * percent_below
@@ -24,7 +23,7 @@ def marshall_str(string):
         }[string.lower()]
     return string
 
-class MujocoDomainRandomization(Wrapper):
+class MujocoDomainRandomization(gymnasium.Wrapper):
     def __init__(self, env, percent_below, percent_above, do_on_reset, do_on_N_step, do_at_creation):
         super().__init__(env)
 

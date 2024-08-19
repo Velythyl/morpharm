@@ -217,10 +217,9 @@ def gen_eval_gamut(eval_cfgs):
 def marshall_multienv_cfg(multienv_cfg):
     multienv_cfg = copy.deepcopy(multienv_cfg)
 
-    for key in ["num_env", "max_episode_length", "action_repeat", "framestack"]:
-        if multienv_cfg[key] not in ["None", None]:
-            multienv_cfg.train[key] = multienv_cfg[key]
-            multienv_cfg.eval[key] = multienv_cfg[key]
+    for key in ["num_env", "max_episode_length", "last_action", "device"]:
+        multienv_cfg.train[key] = multienv_cfg[key]
+        multienv_cfg.eval[key] = multienv_cfg[key]
 
     def coerce_traineval(train_or_eval_cfg):
 

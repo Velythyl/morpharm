@@ -1,24 +1,15 @@
-#defaults:
-#  - env@train:
-#    - ant-with-dr
-#  - env@eval:
-#    - ant-with-dr
+### HIGH-LEVEL ###
 
-device: cuda # falls back to cpu if needed no matter what
-
-do_powerset: False # False #True # if true, eval will be disabled and taken as the left-outs for every set in the powerset of the train envs
-min_powerset_len: None
-max_powerset_len: None
-do_powerset_id: None  # if non-None, will ONLY run this particular ID
-
-num_env: None
-max_episode_length: None
-action_repeat: None
-framestack: None
-mat_framestack_instead: None
+device: cuda
+env_seed: -1  # no seed if env_seed == -1 else env_seed
 
 eval_freq: 5_000_000
 num_eval_steps: 500
-do_eval_video: False
+do_eval_video: True
 
-eval_playback: False
+### PROPAGATES DOWN TO ENVS IN CODE ###
+last_action: True
+num_env: 1
+max_episode_length: 1000
+
+

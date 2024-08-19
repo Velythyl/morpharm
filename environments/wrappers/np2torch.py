@@ -1,12 +1,13 @@
 import numpy as np
 import torch
-from gym import Wrapper
+import gymnasium
 
 def np2torch(np_arr):
     #np_arr = np.copy(np_arr)
 
     ret = torch.from_numpy(np_arr).detach()
     ret.requires_grad = False
+    ret = ret.float()
     return ret
 
 def torch2np(torch_t):
@@ -22,7 +23,7 @@ def dict2torch(np_dict, device):
             ret[k] = v
     return ret
 
-class Np2TorchWrapper(Wrapper):
+class Np2TorchWrapper(gymnasium.Wrapper):
     def __init__(self, env, device):
         super(Np2TorchWrapper, self).__init__(env)
         self.device = device
@@ -35,7 +36,7 @@ class Np2TorchWrapper(Wrapper):
 
     def step(self, action):
         action = torch2np(action)
-        obs, rew, done, info = super(Np2TorchWrapper, self).step(action)
+        obs, rew, term, trunc, info = super(Np2TorchWrapper, self).step(action)
 
         final_info = {}
         for k, v in info.items():
@@ -59,7 +60,7 @@ class Np2TorchWrapper(Wrapper):
                     pass
             final_info[k] = v
 
-        return np2torch(obs).to(self.device), np2torch(rew).to(self.device), np2torch(done).to(self.device).int(), final_info #dict2torch(info, self.device)
+        return np2torch(obs).to(self.device), np2torch(rew).to(self.device), np2torch(term).to(self.device).int(),  np2torch(trunc).to(self.device).int(), final_info
 
 if __name__ == "__main__":
     np2torch

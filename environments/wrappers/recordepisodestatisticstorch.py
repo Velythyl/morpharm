@@ -1,9 +1,9 @@
-import gym
+import gymnasium
 import numpy as np
 import torch
 
 
-class RecordEpisodeStatisticsTorch(gym.Wrapper):
+class RecordEpisodeStatisticsTorch(gymnasium.Wrapper):
     def __init__(self, env, device, num_envs):
         super().__init__(env)
         self.num_envs = num_envs
@@ -12,7 +12,12 @@ class RecordEpisodeStatisticsTorch(gym.Wrapper):
         self.episode_lengths = None
 
     def reset(self, **kwargs):
-        assert len(kwargs) == 0, "If non empty kwargs, might be a reset mask, in which case we're screwed because we dont have logic for partial resets. TODO."
+        if len(kwargs) > 0:
+            ALL_NONE = True
+            for k, v in kwargs.items():
+                if v is not None:
+                    ALL_NONE = False
+            assert ALL_NONE, "If non empty kwargs, might be a reset mask, in which case we're screwed because we dont have logic for partial resets. TODO."
 
         observations = self.env.reset()
         self.episode_returns = torch.zeros(self.num_envs, dtype=torch.float32, device=self.device)
@@ -22,10 +27,11 @@ class RecordEpisodeStatisticsTorch(gym.Wrapper):
         return observations
 
     def step(self, action):
-        observations, rewards, dones, infos = self.env.step(action)
+        observations, rewards, term, trunc, infos = self.env.step(action)
 
-        _rewards = rewards#.to('cpu')
-        _dones = dones.int()#.to('cpu')
+        _rewards = rewards
+        dones = torch.logical_or(term, trunc)
+        _dones = dones.int()
 
         self.episode_returns += _rewards
         self.episode_lengths += 1
@@ -51,6 +57,7 @@ class RecordEpisodeStatisticsTorch(gym.Wrapper):
         return (
             observations,
             rewards,
-            dones,
+            term,
+            trunc,
             infos,
         )

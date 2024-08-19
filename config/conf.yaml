@@ -1,17 +1,6 @@
 defaults:
-  #- env: ant-no-dr
-  - wandb: wandb
-  - rl: ppo
-  - env_method: vanilla_ppo
   - multienv: brax2brax
-  - env@train_env: widow-with-dr
-  - env@eval_env: widow-with-dr
-  - rl@ppo: ppo
-  - rl@sac: sac
-  - rl@rma: rma
-  - ccdb: ccdb
+  - env@train_env: train-with-dr
+  - env@eval_env: eval-with-dr
 
-#hydra:
-#  sweeper:
-#    params:
-#      multienv.env@train: ant-no-dr,ant-with-dr
+  # todo add your algorithm to this hydra config if you want to

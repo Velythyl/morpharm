@@ -1,7 +1,7 @@
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 import torch
-from gym import Wrapper
+from gymnasium import Wrapper
 
 
 
@@ -14,7 +14,7 @@ class LastActEnv(Wrapper):
         NUM_OBS = self.observation_space.shape[1] + self.action_space.shape[1]
 
         self.obs_space_shape = (self.observation_space.shape[0], NUM_OBS)
-        self.observation_space = gym.spaces.Box(low=np.ones(self.obs_space_shape) * -np.inf,
+        self.observation_space = gymnasium.spaces.Box(low=np.ones(self.obs_space_shape) * -np.inf,
                                                 high=np.ones(self.obs_space_shape) * np.inf)
         self.device = device
 
@@ -30,8 +30,8 @@ class LastActEnv(Wrapper):
         return self.make_obs(obs)
 
     def step(self, action):
-        obs, rew, done, info = super(LastActEnv, self).step(action)
+        ret = super(LastActEnv, self).step(action)
 
-        return self.make_obs(obs, action), rew, done, info
+        return self.make_obs(ret[0], action), *ret[1:]
 
 

@@ -1,8 +1,8 @@
-import gym
+import gymnasium
 
 
-class RenderWrap(gym.Wrapper):
+class RenderWrap(gymnasium.Wrapper):
     def __init__(self, env):
         super().__init__(env)
     def render(self, *args, **kwargs):
-        return super(RenderWrap, self).render(mode='rgb_array')
+        return super(RenderWrap, self).render()

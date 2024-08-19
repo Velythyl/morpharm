@@ -1,7 +1,7 @@
-import gym.spaces
+import gymnasium.spaces
 import numpy as np
 import torch
-from gym import Wrapper
+from gymnasium import Wrapper
 
 from environments.wrappers.sim2real.matrix_framestack import MatFrameStackEnv
 
@@ -16,7 +16,7 @@ class VecFrameStackEnv(Wrapper):
         NUM_OBS = env.observation_space.shape[1]
 
         self.obs_space_shape = (self.observation_space.shape[0], self.num_stack * NUM_OBS)
-        self.observation_space = gym.spaces.Box(low=np.ones(self.obs_space_shape) * -np.inf,
+        self.observation_space = gymnasium.spaces.Box(low=np.ones(self.obs_space_shape) * -np.inf,
                                                 high=np.ones(self.obs_space_shape) * np.inf)
 
     def reset(self, **kwargs):

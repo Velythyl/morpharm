@@ -1,0 +1,35 @@
+env_key:
+  - wx250s
+  - panda
+  - gen3
+  - vx300s
+  - iiwa14
+  - sawyer
+  - xarm7
+  - ur5e
+  - z1
+  - lite6
+  - ur10e
+
+# env_key:
+#  - braxmjx-widow
+#  - braxspring-widow
+#  - braxgeneralized-widow
+#  - braxpositional-widow
+#  - mujoco-widow
+
+
+
+dr_percent_below: 0.5
+dr_percent_above: 2.0
+dr_do_on_reset: True
+dr_do_on_N_step: 1200:5000
+dr_do_at_creation: False
+
+
+### OBTAINED FROM MULTIENV CONFIG ###
+
+device: cuda
+num_env: 100 #00
+max_episode_length: 1000
+last_action: True
