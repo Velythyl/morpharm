@@ -1,6 +1,6 @@
 defaults:
-  - multienv: brax2brax
-  - env@train_env: train-with-dr
-  - env@eval_env: eval-with-dr
+  - multienv: multienv
+  - env@train_env: all-with-dr
+  - env@eval_env: allandwidow-with-dr
 
   # todo add your algorithm to this hydra config if you want to
